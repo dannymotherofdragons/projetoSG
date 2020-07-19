@@ -4,9 +4,10 @@ var scene = null,
     floor,
     keyboard = {},
     player = {
-        height: 1.8,
+        height: 4,
         speed: 0.2,
-    }
+    },
+    raycaster;
 
 window.onload = function init() {
     //set up da cena, camara e mesh
@@ -16,6 +17,8 @@ window.onload = function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor("#34c3eb");
     document.body.appendChild(renderer.domElement);
+
+    raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(90, 1280 / 720, 0.1, 1000);
@@ -27,6 +30,7 @@ window.onload = function init() {
     //spawnFire();
     spawnFruit();
     createFloor();
+
 
     //luzes
     ambientLight = new THREE.AmbientLight(0xfffff, 1);
@@ -45,14 +49,32 @@ window.onload = function init() {
 
 function createFloor() {
 
-    let grassGeometry = new THREE.PlaneGeometry(70, 70, 20);
+    let grassGeometry = new THREE.BoxGeometry(70, 72, 1);
     let grassMesh = new THREE.MeshPhongMaterial({
-        color: 0x42a832
+        color: 0x42a832,
+        side: THREE.DoubleSide
     })
     let floor = new THREE.Mesh(grassGeometry, grassMesh);
 
-    floor.rotation.x -= Math.PI / 2; //roda -90 graus em x*/
+    floor.rotation.x = Math.PI / 2; //roda 90 graus em x
+    floor.position.y = -0.9
     scene.add(floor)
+
+    let pathGeometry = new THREE.BoxGeometry(-15, 72, 1.1)
+    let pathTex = new THREE.TextureLoader().load("./img/path.jpg")
+    pathTex.wrapS = THREE.RepeatWrapping;
+    pathTex.wrapT = THREE.RepeatWrapping;
+    pathTex.repeat.set(7, 7)
+    let pathMaterial = new THREE.MeshPhongMaterial({
+        map: pathTex,
+        side: THREE.DoubleSide
+    })
+
+    let path = new THREE.Mesh(pathGeometry, pathMaterial)
+    path.rotation.x = Math.PI / 2
+    path.position.set(0, -0.8, 0)
+    scene.add(path)
+
 }
 
 function spawnArvores() {
@@ -79,7 +101,7 @@ function spawnArvores() {
     let copa = new THREE.Mesh(copaGeo, copaMaterial)
     copa.position.y = 3
     tronco.add(copa)
-    arvore.position.set(4, 1, 15)
+    arvore.position.set(9, 1, 15)
     scene.add(arvore)
 
     arvore1 = new THREE.Object3D()
@@ -127,7 +149,7 @@ function spawnArvores() {
     let copa4 = new THREE.Mesh(copaGeo, copaMaterial)
     copa4.position.y = 3
     tronco4.add(copa4)
-    arvore4.position.set(4, 1, 0)
+    arvore4.position.set(-9, 1, 0)
     scene.add(arvore4)
 
     arvore5 = new THREE.Object3D()
@@ -211,7 +233,7 @@ function spawnArvores() {
     let copa11 = new THREE.Mesh(copaGeo, copaMaterial)
     copa11.position.y = 3
     tronco11.add(copa11)
-    arvore11.position.set(0, 1, 30)
+    arvore11.position.set(-15, 1, 30)
     scene.add(arvore11)
 
 }
@@ -256,7 +278,7 @@ function spawnFruit() {
 
     let fruit = new THREE.Mesh(fruitGeo, fruitMaterial)
 
-    fruit.position.set(5, 0.5, 15.5)
+    fruit.position.set(11, 0.5, 15.5)
     fruitSpawned.add(fruit)
     scene.add(fruitSpawned)
 
@@ -288,7 +310,7 @@ function spawnFruit() {
 
     let fruit4 = new THREE.Mesh(fruitGeo, fruitMaterial)
 
-    fruit4.position.set(5, 0.5, 0.5)
+    fruit4.position.set(-10, 0.5, 0.5)
     fruitSpawned.add(fruit4)
     scene.add(fruitSpawned)
 
@@ -320,7 +342,7 @@ function spawnFruit() {
 
     let fruit8 = new THREE.Mesh(fruitGeo, fruitMaterial)
 
-    fruit8.position.set(-29,0.5, -19)
+    fruit8.position.set(-29, 0.5, -19)
     fruitSpawned.add(fruit8)
     scene.add(fruitSpawned)
 
@@ -344,7 +366,7 @@ function spawnFruit() {
 
     let fruit11 = new THREE.Mesh(fruitGeo, fruitMaterial)
 
-    fruit11.position.set(1, 0.5, 31)
+    fruit11.position.set(-14, 0.5, 31)
     fruitSpawned.add(fruit11)
     scene.add(fruitSpawned)
 }
