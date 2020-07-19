@@ -1,12 +1,14 @@
 var scene = null,
     camera,
     renderer = null,
-    floor,
     keyboard = {},
     player = {
         height: 4,
         speed: 0.2,
     },
+    fruitLeft = [],
+
+    mouse = new THREE.Vector2(),
     raycaster;
 
 window.onload = function init() {
@@ -21,8 +23,11 @@ window.onload = function init() {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(90, 1280 / 720, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 4000);
 
+
+    document.addEventListener("mousedown", despawnFruit, false);
+    document.addEventListener("mouseup", notClicked, false);
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
 
@@ -30,6 +35,7 @@ window.onload = function init() {
     //spawnFire();
     spawnFruit();
     createFloor();
+    despawnFruit();
 
 
     //luzes
@@ -60,14 +66,16 @@ function createFloor() {
     floor.position.y = -0.9
     scene.add(floor)
 
+    //path 1
     let pathGeometry = new THREE.BoxGeometry(-15, 72, 1.1)
     let pathTex = new THREE.TextureLoader().load("./img/path.jpg")
+    //repetir a textura do path
     pathTex.wrapS = THREE.RepeatWrapping;
     pathTex.wrapT = THREE.RepeatWrapping;
     pathTex.repeat.set(7, 7)
     let pathMaterial = new THREE.MeshPhongMaterial({
         map: pathTex,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
     })
 
     let path = new THREE.Mesh(pathGeometry, pathMaterial)
@@ -75,6 +83,23 @@ function createFloor() {
     path.position.set(0, -0.8, 0)
     scene.add(path)
 
+    //path 2
+
+    let pathGeometry1 = new THREE.BoxGeometry(-15, 72, 1.1)
+    let pathTex1 = new THREE.TextureLoader().load("./img/path.jpg")
+    //repetir a textura do path
+    pathTex1.wrapS = THREE.RepeatWrapping;
+    pathTex1.wrapT = THREE.RepeatWrapping;
+    pathTex1.repeat.set(7, 7)
+    let pathMaterial1 = new THREE.MeshPhongMaterial({
+        map: pathTex1,
+        side: THREE.DoubleSide,
+    })
+
+    let path1 = new THREE.Mesh(pathGeometry1, pathMaterial1)
+    path1.rotation.x = Math.PI / 2
+    path1.position.set(0, -0.8, 0)
+    scene.add(path1)
 }
 
 function spawnArvores() {
@@ -371,6 +396,30 @@ function spawnFruit() {
     scene.add(fruitSpawned)
 }
 
+function despawnFruit(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    let despawn
+    raycaster.setFromCamera(mouse, camera);
+
+    // Calcula os objetos que intersetam o raio de escolha
+    let pickedFruit = raycaster.intersectObjects(fruitLeft, true);
+    if (pickedFruit.length > 0) {
+        touchedFruit = pickedFruit[0].object;
+        if (touchedFruit = true) {
+
+            touchedFruit.position.y = -200
+            despawn = fruitLeft.indexOf(touchedFruit)
+            fruitLeft.splice(despawn, 1)
+
+        }
+    }
+
+}
+
+function notClicked() {
+    pickedFruit = null;
+}
 
 //animate
 function animate() {
