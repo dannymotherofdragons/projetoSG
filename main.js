@@ -7,14 +7,13 @@ var scene = null,
         speed: 0.2,
     },
     fruitLeft = [],
-
     mouse = new THREE.Vector2(),
     raycaster;
 
 window.onload = function init() {
     //set up da cena, camara e mesh
 
-    renderer = new THREE.WebGLRenderer;
+    renderer = new THREE.WebGLRenderer({ antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor("#34c3eb");
@@ -39,8 +38,9 @@ window.onload = function init() {
 
 
     //luzes
-    ambientLight = new THREE.AmbientLight(0xfffff, 1);
-    scene.add(ambientLight);
+    let ambientLight = new THREE.HemisphereLight(0xefffd0, 0.8)
+    scene.add(ambientLight)
+    
 
     //camera position
     camera.position.set(0, player.height, 0);
@@ -56,20 +56,26 @@ window.onload = function init() {
 function createFloor() {
 
     let grassGeometry = new THREE.BoxGeometry(70, 72, 1);
-    let grassMesh = new THREE.MeshPhongMaterial({
-        color: 0x42a832,
-        side: THREE.DoubleSide
-    })
-    let floor = new THREE.Mesh(grassGeometry, grassMesh);
+    let grassTex = new THREE.TextureLoader().load("./img/lawn.jpg")
+    grassTex.wrapS = THREE.RepeatWrapping;
+    grassTex.wrapT = THREE.RepeatWrapping;
+    grassTex.repeat.set(27, 27)
 
-    floor.rotation.x = Math.PI / 2; //roda 90 graus em x
-    floor.position.y = -0.9
-    scene.add(floor)
+    let grassMaterial = new THREE.MeshPhongMaterial({
+        map: grassTex,
+        side: THREE.DoubleSide,
+    })
+    
+    let grass = new THREE.Mesh(grassGeometry, grassMaterial);
+
+    grass.rotation.x = Math.PI / 2; //roda 90 graus em x
+    grass.position.y = -0.9
+    scene.add(grass)
 
     //path 1
     let pathGeometry = new THREE.BoxGeometry(-15, 72, 1.1)
     let pathTex = new THREE.TextureLoader().load("./img/path.jpg")
-    //repetir a textura do path
+    //repetir a textura do path 
     pathTex.wrapS = THREE.RepeatWrapping;
     pathTex.wrapT = THREE.RepeatWrapping;
     pathTex.repeat.set(7, 7)
@@ -85,7 +91,7 @@ function createFloor() {
 
     //path 2
 
-    let pathGeometry1 = new THREE.BoxGeometry(-15, 72, 1.1)
+    /*let pathGeometry1 = new THREE.BoxGeometry(-15, 72, 1.1)
     let pathTex1 = new THREE.TextureLoader().load("./img/path.jpg")
     //repetir a textura do path
     pathTex1.wrapS = THREE.RepeatWrapping;
@@ -99,7 +105,7 @@ function createFloor() {
     let path1 = new THREE.Mesh(pathGeometry1, pathMaterial1)
     path1.rotation.x = Math.PI / 2
     path1.position.set(0, -0.8, 0)
-    scene.add(path1)
+    scene.add(path1)*/
 }
 
 function spawnArvores() {
@@ -397,24 +403,7 @@ function spawnFruit() {
 }
 
 function despawnFruit(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    let despawn
-    raycaster.setFromCamera(mouse, camera);
-
-    // Calcula os objetos que intersetam o raio de escolha
-    let pickedFruit = raycaster.intersectObjects(fruitLeft, true);
-    if (pickedFruit.length > 0) {
-        touchedFruit = pickedFruit[0].object;
-        if (touchedFruit = true) {
-
-            touchedFruit.position.y = -200
-            despawn = fruitLeft.indexOf(touchedFruit)
-            fruitLeft.splice(despawn, 1)
-
-        }
-    }
-
+    
 }
 
 function notClicked() {
