@@ -6,27 +6,36 @@ var scene = null,
         height: 4,
         speed: 0.2,
     },
-    fruitLeft = [],
+    fruits = [],
     mouse = new THREE.Vector2(),
-    raycaster;
+    plane = null,
+    selectedObject = null,
+    offset = new THREE.Vector3(),
+    raycaster = new THREE.Raycaster();
 
 window.onload = function init() {
-    //set up da cena, camara e mesh
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    //set up da cena e camara 
+
+    renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor("#34c3eb");
     document.body.appendChild(renderer.domElement);
 
-    raycaster = new THREE.Raycaster();
+
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 4000);
+    //controls = new THREE.OrbitControls(camera);
+    //controls.addEventListener('change', function () { renderer.render(scene, camera); });
 
 
-    document.addEventListener("mousedown", despawnFruit, false);
-    document.addEventListener("mouseup", notClicked, false);
+    document.addEventListener("mousedown", mouseDown, false);
+    //document.addEventListener("mousemove", mouseMove, false);
+    document.addEventListener("mouseup", mouseUp, false);
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
 
@@ -34,17 +43,24 @@ window.onload = function init() {
     //spawnFire();
     spawnFruit();
     createFloor();
-    despawnFruit();
+    //despawnFruit();
+
+    //var controls = new THREE.DragControls(fruits, camera, renderer.domElement)
 
 
     //luzes
     let ambientLight = new THREE.HemisphereLight(0xefffd0, 0.8)
     scene.add(ambientLight)
-    
+
 
     //camera position
-    camera.position.set(0, player.height, 0);
-    camera.lookAt(new THREE.Vector3(0, player.height, 0));
+    // Add  a camera so we can view the scene
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.x = 0;
+    camera.position.y = player.height;
+    camera.position.z = 100;
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    scene.add(camera);
 
     //sombras
     renderer.shadowMap.type = THREE.BasicShadowMap;
@@ -65,7 +81,7 @@ function createFloor() {
         map: grassTex,
         side: THREE.DoubleSide,
     })
-    
+
     let grass = new THREE.Mesh(grassGeometry, grassMaterial);
 
     grass.rotation.x = Math.PI / 2; //roda 90 graus em x
@@ -88,6 +104,18 @@ function createFloor() {
     path.rotation.x = Math.PI / 2
     path.position.set(0, -0.8, 0)
     scene.add(path)
+
+    plane = new THREE.Mesh(new THREE.PlaneGeometry(72, 70), new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        opacity: 0.15,
+        transparent: true,
+        visible: true,
+        side: THREE.DoubleSide
+    }));
+    plane.rotation.x = -Math.PI/2
+
+    plane.position.z = 3;
+    scene.add(plane);
 
     //path 2
 
@@ -312,6 +340,7 @@ function spawnFruit() {
     fruit.position.set(11, 0.5, 15.5)
     fruitSpawned.add(fruit)
     scene.add(fruitSpawned)
+    fruits.push(fruit)
 
     fruitSpawned1 = new THREE.Object3D
 
@@ -319,7 +348,8 @@ function spawnFruit() {
 
     fruit1.position.set(21, 0.5, 15.5)
     fruitSpawned.add(fruit1)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned1)
+    fruits.push(fruit1)
 
     fruitSpawned2 = new THREE.Object3D
 
@@ -328,6 +358,7 @@ function spawnFruit() {
     fruit2.position.set(-19, 0.5, -14.5)
     fruitSpawned.add(fruit2)
     scene.add(fruitSpawned)
+    fruits.push(fruit2)
 
     fruitSpawned3 = new THREE.Object3D
 
@@ -335,7 +366,11 @@ function spawnFruit() {
 
     fruit3.position.set(-13, 0.5, 14.5)
     fruitSpawned.add(fruit3)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned3)
+    fruits.push(fruit3)
+
+    //check if it's pushing
+    console.log(fruits)
 
     fruitSpawned4 = new THREE.Object3D
 
@@ -343,7 +378,8 @@ function spawnFruit() {
 
     fruit4.position.set(-10, 0.5, 0.5)
     fruitSpawned.add(fruit4)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned4)
+    fruits.push(fruit4)
 
     fruitSpawned5 = new THREE.Object3D
 
@@ -351,7 +387,8 @@ function spawnFruit() {
 
     fruit5.position.set(31, 0.5, -9.5)
     fruitSpawned.add(fruit5)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned5)
+    fruits.push(fruit5)
 
     fruitSpawned6 = new THREE.Object3D
 
@@ -359,15 +396,17 @@ function spawnFruit() {
 
     fruit6.position.set(26, 0.6, 5.5)
     fruitSpawned.add(fruit6)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned6)
+    fruits.push(fruit6)
 
-    fruitSpawned6 = new THREE.Object3D
+    fruitSpawned7 = new THREE.Object3D
 
     let fruit7 = new THREE.Mesh(fruitGeo, fruitMaterial)
 
     fruit7.position.set(21, 0.5, 34.5)
     fruitSpawned.add(fruit7)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned7)
+    fruits.push(fruit7)
 
     fruitSpawned8 = new THREE.Object3D
 
@@ -375,15 +414,16 @@ function spawnFruit() {
 
     fruit8.position.set(-29, 0.5, -19)
     fruitSpawned.add(fruit8)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned8)
+    fruits.push(fruit8)
 
     fruitSpawned9 = new THREE.Object3D
 
     let fruit9 = new THREE.Mesh(fruitGeo, fruitMaterial)
-
     fruit9.position.set(26, 0.6, 5.5)
     fruitSpawned.add(fruit9)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned9)
+    fruits.push(fruit9)
 
     fruitSpawned10 = new THREE.Object3D
 
@@ -391,7 +431,8 @@ function spawnFruit() {
 
     fruit10.position.set(25, 0.5, -14.5)
     fruitSpawned.add(fruit10)
-    scene.add(fruitSpawned)
+    scene.add(fruitSpawned10)
+    fruits.push(fruit10)
 
     fruitSpawned11 = new THREE.Object3D
 
@@ -399,15 +440,91 @@ function spawnFruit() {
 
     fruit11.position.set(-14, 0.5, 31)
     fruitSpawned.add(fruit11)
-    scene.add(fruitSpawned)
+    fruit11.name = "Melhor amiga";
+    scene.add(fruitSpawned11)
+    fruits.push(fruit11)
 }
 
-function despawnFruit(event) {
+/*function despawnFruit(event) {
     
+}*/
+
+function mouseDown(event) {
+    event.preventDefault();
+
+    // get the mouse position in viewport coordinates
+    let mousePoint = new THREE.Vector2();
+    mousePoint.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePoint.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    
+    let fruitDelete
+    // create a raycaster and update the picking ray with the camera and current mouse position
+    raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mousePoint, camera);
+    
+    // calculate objects intersecting the picking ray
+    let intersects = raycaster.intersectObjects(fruits);
+
+    if (intersects.length > 0) {
+        console.log("This has started");
+        selectedObject = intersects[0].object;
+        if (selectedObject != null) {
+
+            selectedObject.position.y = -200
+            fruitDelete = fruits.indexOf(selectedObject)
+            fruits.splice(fruitDelete, 1)
+        }
+        
+
+        //disable the orbit controller (drag the object around and not rotate the scene)
+        /*controls.enabled = false;
+        //assign the first intersected object to the selectedObject global variable
+        selectedObject = intersects[0].fruitSpawned;
+        
+        // determine the offset between the point (in the plane) where we clicked and the center of the object
+        let intersectsPlane = raycaster.intersectObject(plane);
+        offset.copy(intersectsPlane[0].point).sub(selectedObject.position);
+        console.log("object selected ", selectedObject.position, offset)*/
+    }
+    else{
+        console.log("No fruit found")
+    }
 }
 
-function notClicked() {
-    pickedFruit = null;
+/*function mouseMove(event) {
+    event.preventDefault();
+    // get the mouse position in viewport coordinates
+    let mousePoint = new THREE.Vector2();
+    mousePoint.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePoint.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    // create a raycaster and update the picking ray with the camera and current mouse position
+    raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mousePoint, camera);
+
+    // if we've selected an object and are dragging it around
+    if (selectedObject) {
+        //drag an object around if we've already clicked on one
+        let intersects = raycaster.intersectObject(plane);
+        selectedObject.position.copy(intersects[0].point.sub(offset));
+    } 
+    // b) auxiliary plane must pass on the object's center
+    else {
+        let intersects = raycaster.intersectObjects(fruits);
+        if (intersects.length > 0) {
+            console.log("reposition the plane")
+            //reposition the plane
+            plane.position.copy(intersects[0].fruitSpawned.position);
+            //c) make sure the plane faces the camera 
+            plane.lookAt(camera.position);
+          }
+    }
+}*/
+
+
+function mouseUp(event) {
+    //controls.enabled = true;
+    selectedObject = null;
 }
 
 //animate
@@ -426,11 +543,11 @@ function animate() {
     }
 
     if (keyboard[65]) { //left movement
-        camera.rotation.y -= Math.PI * 0.01;
+        camera.rotation.y += Math.PI * 0.01;
     }
 
     if (keyboard[68]) { //right movement
-        camera.rotation.y += Math.PI * 0.01;
+        camera.rotation.y -= Math.PI * 0.01;
     }
 
     renderer.render(scene, camera);
