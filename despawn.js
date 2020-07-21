@@ -28,7 +28,6 @@ window.onload = function init() {
 
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 4000);
     //controls = new THREE.OrbitControls(camera);
     //controls.addEventListener('change', function () { renderer.render(scene, camera); });
 
@@ -38,6 +37,7 @@ window.onload = function init() {
     document.addEventListener("mouseup", mouseUp, false);
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
+    window.addEventListener('resize', resize, false);
 
     spawnArvores();
     //spawnFire();
@@ -58,7 +58,7 @@ window.onload = function init() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = 0;
     camera.position.y = player.height;
-    camera.position.z = 100;
+    camera.position.z = 45;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     scene.add(camera);
 
@@ -109,7 +109,7 @@ function createFloor() {
         color: 0x00ff00,
         opacity: 0.15,
         transparent: true,
-        visible: true,
+        visible: false,
         side: THREE.DoubleSide
     }));
     plane.rotation.x = -Math.PI/2
@@ -560,4 +560,12 @@ function keyDown(event) {
 
 function keyUp(event) {
     keyboard[event.keyCode] = false;
+}
+
+function resize() {
+    const HEIGHT = window.innerHeight;
+    const WIDTH = window.innerWidth;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
 }

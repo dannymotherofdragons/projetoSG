@@ -11,7 +11,7 @@ var scene = null,
     mouse = new THREE.Vector2(),
     plane = null,
     selectedObject = null,
-    cube,
+    fruitBox,
     offset = new THREE.Vector3(),
     raycaster = new THREE.Raycaster();
 
@@ -43,6 +43,7 @@ window.onload = function init() {
     //document.addEventListener("doubleclick", doubleClick, false);
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
+    window.addEventListener('resize', resize, false);
 
     spawnArvores();
     //spawnFire();
@@ -63,7 +64,7 @@ window.onload = function init() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = 0;
     camera.position.y = player.height;
-    camera.position.z = 100;
+    camera.position.z = 43;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     scene.add(camera);
 
@@ -72,12 +73,13 @@ window.onload = function init() {
     document.body.appendChild(renderer.domElement);
 
     let geometry = new THREE.BoxGeometry(3, 3, 3);
-    let material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00
-    });
-    let cube = new THREE.Mesh(geometry, material);
-    cube.name = "basket";
-    scene.add(cube);
+    let texture = new THREE.TextureLoader().load("./img/box.jpg")
+    let material = new THREE.MeshPhongMaterial({
+        map:texture,
+    })
+    let fruitBox = new THREE.Mesh(geometry, material);
+    fruitBox.name = "basket";
+    scene.add(fruitBox);
 
     animate();
 }
@@ -120,9 +122,9 @@ function createFloor() {
 
     plane = new THREE.Mesh(new THREE.PlaneGeometry(72, 70), new THREE.MeshBasicMaterial({
         color: 0x00ff00,
-        opacity: 0.15,
+        opacity: 0,
         transparent: true,
-        visible: true,
+        visible: false,
         side: THREE.DoubleSide
     }));
     plane.rotation.x = -Math.PI / 2
@@ -527,9 +529,9 @@ function mouseMove(event) {
         let intersects = raycaster.intersectObject(plane);
         selectedObject.position.copy(intersects[0].point.sub(offset));
 
-        /*let cubo = raycaster.intersectObject(cube);
+        /*let cubo = raycaster.intersectObject(fruitBox);
         console.log(cubo);
-        if (cube != null) {
+        if (fruitBox != null) {
             if (selectedObject.position.x < cubo[0].object.position.x + 3 || selectedObject.position.x > cubo[0].object.position.x - 3 ||
                 selectedObject.position.x < cubo[0].object.position.y + 3 || selectedObject.position.x > cubo[0].object.position.y - 3 ||
                 selectedObject.position.x < cubo[0].object.position.z + 3 || selectedObject.position.x > cubo[0].object.position.z - 3) {
@@ -616,4 +618,12 @@ function keyDown(event) {
 
 function keyUp(event) {
     keyboard[event.keyCode] = false;
+}
+
+function resize() {
+    const HEIGHT = window.innerHeight;
+    const WIDTH = window.innerWidth;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
 }
