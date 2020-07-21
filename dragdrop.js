@@ -112,7 +112,7 @@ function createFloor() {
     pathTex.repeat.set(7, 7)
     let pathMaterial = new THREE.MeshPhongMaterial({
         map: pathTex,
-        side: THREE.DoubleSide,
+        side: THREE.DoubleSide
     })
 
     let path = new THREE.Mesh(pathGeometry, pathMaterial)
@@ -466,17 +466,17 @@ function spawnFruit() {
 function mouseDown(event) {
     event.preventDefault();
 
-    // get the mouse position in viewport coordinates
+    // get the mouse position 
     let mousePoint = new THREE.Vector2();
     mousePoint.x = (event.clientX / window.innerWidth) * 2 - 1;
     mousePoint.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     let fruitDelete
-    // create a raycaster and update the picking ray with the camera and current mouse position
+    // create a raycaster that finds the orange
     raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mousePoint, camera);
 
-    // calculate objects intersecting the picking ray
+    // calculate objects "grabbed"
     let intersects = raycaster.intersectObjects(fruits);
 
     //tentativas de fazer o despawn com a colisão na caixa
@@ -519,13 +519,13 @@ function mouseMove(event) {
     mousePoint.x = (event.clientX / window.innerWidth) * 2 - 1;
     mousePoint.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    // create a raycaster and update the picking ray with the camera and current mouse position
+   
     raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mousePoint, camera);
 
-    // if we've selected an object and are dragging it around
+    // if we've selected an object 
     if (selectedObject) {
-        //drag an object around if we've already clicked on one
+        //drag an object
         let intersects = raycaster.intersectObject(plane);
         selectedObject.position.copy(intersects[0].point.sub(offset));
 
@@ -539,14 +539,11 @@ function mouseMove(event) {
             }
         }*/
     }
-    // b) auxiliary plane must pass on the object's center
     else {
         let intersects = raycaster.intersectObjects(fruits);
         if (intersects.length > 0) {
-            console.log("reposition the plane")
-            //reposition the plane
+            //console.log("mexeu-se")
             plane.position.copy(intersects[0].object.position);
-            //c) make sure the plane faces the camera 
             plane.lookAt(camera.position);
         }
     }

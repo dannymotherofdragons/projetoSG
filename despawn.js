@@ -452,17 +452,17 @@ function spawnFruit() {
 function mouseDown(event) {
     event.preventDefault();
 
-    // get the mouse position in viewport coordinates
+    // get mouse position 
     let mousePoint = new THREE.Vector2();
     mousePoint.x = (event.clientX / window.innerWidth) * 2 - 1;
     mousePoint.y = - (event.clientY / window.innerHeight) * 2 + 1;
     
-    let fruitDelete
-    // create a raycaster and update the picking ray with the camera and current mouse position
+    //let fruitDelete
+    // create a raycaster 
     raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mousePoint, camera);
     
-    // calculate objects intersecting the picking ray
+    // calculate touchec orange
     let intersects = raycaster.intersectObjects(fruits);
 
     if (intersects.length > 0) {
@@ -470,21 +470,10 @@ function mouseDown(event) {
         selectedObject = intersects[0].object;
         if (selectedObject != null) {
 
-            selectedObject.position.y = -200
-            fruitDelete = fruits.indexOf(selectedObject)
-            fruits.splice(fruitDelete, 1)
-        }
-        
-
-        //disable the orbit controller (drag the object around and not rotate the scene)
-        /*controls.enabled = false;
-        //assign the first intersected object to the selectedObject global variable
-        selectedObject = intersects[0].fruitSpawned;
-        
-        // determine the offset between the point (in the plane) where we clicked and the center of the object
-        let intersectsPlane = raycaster.intersectObject(plane);
-        offset.copy(intersectsPlane[0].point).sub(selectedObject.position);
-        console.log("object selected ", selectedObject.position, offset)*/
+            selectedObject.position.y = -321
+            //fruitDelete = fruits.indexOf(selectedObject)
+            //fruits.splice(fruitDelete, 1)
+        }   
     }
     else{
         console.log("No fruit found")
